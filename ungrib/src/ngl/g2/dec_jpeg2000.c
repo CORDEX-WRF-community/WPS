@@ -68,6 +68,7 @@
     jas_image_cmpt_t cmpt,*pcmpt;
     char *opts=0;
     jas_matrix_t *data;
+    int fmt_id = 0; // The new format ID variable
 
 /*    jas_init(); */
 
@@ -77,12 +78,25 @@
 
     jpcstream=jas_stream_memopen(injpc,*bufsize);
 
+// --- START of MODIFIED BLOCK ---
+
+/*
+ * Get the format identifier for JPEG 2000 Code Stream (jpc).
+ */
+    fmt_id = jas_image_getfmt("jpc");
+    if (fmt_id < 0) {
+        printf("jas_image_getfmt failed for 'jpc'\n");
+        return -3; // Or another appropriate error code
+    }
+
+/*
+
 /*   
  *     Decode JPEG200 codestream into jas_image_t structure.
  */      
-    image=jpc_decode(jpcstream,opts);
+    image=jas_image_decode(jpcstream,fmt_id,opts);
     if ( image == 0 ) {
-       printf(" jpc_decode return = %d \n",ier);
+       printf(" jas_image_decode return = %d \n",ier);
        return -3;
     }
     
